@@ -38,6 +38,6 @@ module.exports = async function (fastify, opts) {
   // define your routes in one of these
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'routes'),
-    options: Object.assign({}, { prefix: process.env.BASE_URL }),
+    options: Object.assign({}, { prefix: process.env.API_VERSION }),
   });
 };
