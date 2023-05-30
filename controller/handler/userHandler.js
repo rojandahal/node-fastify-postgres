@@ -57,7 +57,6 @@ const updateUsers = async (req, reply) => {
   if (user.username === tokenDecoded.username) {
     const updatedUser = { username: req.body.username };
     await user.update(updatedUser);
-    console.log(req.server.prefix);
     reply.clearCookie('token', { path: '/api/v1' });
     const token = req.server.jwt.sign({ id: user.id, username: user.username });
     // Set the token as a cookie
@@ -105,7 +104,6 @@ const getUser = async (req, reply) => {
   }
 
   const tokenDecoded = await req.server.getUserFromToken(req, reply);
-  console.log(user);
   if (user.username === tokenDecoded.username) {
     reply.code(200).send({ user });
     return;
