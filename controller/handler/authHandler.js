@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 
+//Login User
 const loginUser = async (req, reply) => {
   const { username, password } = req.body;
   const userModel = req.server.user;
@@ -11,7 +12,11 @@ const loginUser = async (req, reply) => {
     const row = await userModel.findOne({ where: { username: username } });
     if (row) {
       if (row.password === hashedPw) {
-        const token = req.server.jwt.sign(row);
+        const token = req.server.jwt.sign({
+          id: row.id,
+          username: row.username,
+        });
+        req.session.userId = row.id;
         // Set the token as a cookie
         reply.setCookie('token', token, {
           expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
@@ -29,9 +34,20 @@ const loginUser = async (req, reply) => {
   }
 };
 
-const logoutUser = async (req, reply) => {
-  reply.clearCookie('token', { path: '/' });
-  reply.code(200).send({ 'Logout Successful': 'Logged out' });
+//Logout User
+const logoutUser = async (request, reply) => {
+  // Delete the session from the session store
+  try {
+    await request.session.destroy();
+    // Clear the token and session cookie on the client-side
+    reply.clearCookie('sessionId');
+    reply.clearCookie('token', { domain: 'localhost', path: '/api/v1' });
+    reply.code(200).send({ 'Logout Successful': 'Logged out' });
+    return;
+  } catch (error) {
+    console.error('Error deleting session:', error);
+    reply.send({ error: 'An error occurred during logout' });
+  }
 };
 
 module.exports = { loginUser, logoutUser };
