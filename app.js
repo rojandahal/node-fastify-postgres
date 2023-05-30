@@ -2,6 +2,7 @@
 
 const path = require('path');
 const AutoLoad = require('@fastify/autoload');
+const cors = require('@fastify/cors');
 
 // Define the default options
 const defaultOptions = {
@@ -24,6 +25,14 @@ module.exports = async function (fastify, opts) {
   //Register cookie plugin
   fastify.register(require('@fastify/cookie'), {
     secret: process.env.SECRET_KEY, // for cookies signature
+  });
+
+  
+
+  //Setup CORS
+  await fastify.register(cors, {
+    origin: true,
+    credentials: true,
   });
 
   // This loads all plugins defined in plugins
