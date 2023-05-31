@@ -20,7 +20,7 @@ module.exports = async function (fastify, opts) {
   });
 
   fastify.get('/:id', {
-    preValidation: [fastify.updateTokenExpiry, fastify.authenticate],
+    preValidation: [fastify.authenticate],
     schema: getUserOpts,
     handler: getUser,
   });
