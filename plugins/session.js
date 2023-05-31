@@ -14,8 +14,8 @@ const sessionConnect = async (fastify, opts) => {
     cookie: {
       secure: false, // Set to true if using HTTPS
       // maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
-      maxAge: 6000,
-      expires: new Date(Date.now() + 6000),
+      maxAge: 60000,
+      expires: new Date(Date.now() + 60000),
     },
     saveUninitialized: false,
     sameSite: true,
