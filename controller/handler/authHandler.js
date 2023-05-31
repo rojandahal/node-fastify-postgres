@@ -12,16 +12,17 @@ const loginUser = async (req, reply) => {
     const row = await userModel.findOne({ where: { username: username } });
     if (row) {
       if (row.password === hashedPw) {
-        const token = req.server.jwt.sign({
-          id: row.id,
-          username: row.username,
-        });
+        // const token = req.server.jwt.sign({
+        //   id: row.id,
+        //   username: row.username,
+        // });
+				console.log("Login Successful")
         req.session.userId = row.id;
         // Set the token as a cookie
-        reply.setCookie('token', token, {
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
-        });
-        reply.code(200).send({ 'Login Successful': token });
+        // reply.setCookie('token', token, {
+        //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
+        // });
+        reply.code(200).send({ 'Login Successful': req.session.user, 'SessionId': req.session });
       } else {
         reply.status(401).send('Wrong Password');
       }

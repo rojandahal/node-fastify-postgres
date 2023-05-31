@@ -13,17 +13,19 @@ const sessionConnect = async (fastify, opts) => {
     secret: process.env.SESSION_SECRET,
     cookie: {
       secure: false, // Set to true if using HTTPS
-      maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
+      // maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
+      maxAge: 6000,
+      expires: new Date(Date.now() + 6000),
     },
     saveUninitialized: false,
     sameSite: true,
     store: new pgSession({
       pool,
       tableName: 'sessions', // Name of the session table in the database
+      createTableIfMissing: false, // Disable table creation if missing
     }),
   });
 };
-
 // const fastifyPlugin = require('fastify-plugin');
 // const session = require('fastify-session');
 
