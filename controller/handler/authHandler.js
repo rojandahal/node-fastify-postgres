@@ -16,13 +16,16 @@ const loginUser = async (req, reply) => {
         //   id: row.id,
         //   username: row.username,
         // });
-				console.log("Login Successful")
+        console.log('Login Successful');
         req.session.userId = row.id;
         // Set the token as a cookie
         // reply.setCookie('token', token, {
         //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
         // });
-        reply.code(200).send({ 'Login Successful': req.session.user, 'SessionId': req.session });
+        reply.code(200).send({
+          'Login Successful': req.session.user,
+          SessionId: req.session,
+        });
       } else {
         reply.status(401).send('Wrong Password');
       }
@@ -36,13 +39,11 @@ const loginUser = async (req, reply) => {
 };
 
 //Logout User
-const logoutUser = async (request, reply) => {
+const logoutUser = async (req, reply) => {
   // Delete the session from the session store
   try {
-    await request.session.destroy();
-    // Clear the token and session cookie on the client-side
-    reply.clearCookie('sessionId');
-    reply.clearCookie('token', { domain: 'localhost', path: '/api/v1' });
+    // Clear the token and session cookie
+    await req.session.destroy();
     reply.code(200).send({ 'Logout Successful': 'Logged out' });
     return;
   } catch (error) {

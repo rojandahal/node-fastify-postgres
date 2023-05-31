@@ -51,8 +51,6 @@ const updateUsers = async (req, reply) => {
       const user = await req.server.user.findOne({ where: { id: id } });
       const updatedUser = { username: req.body.username };
       await user.update(updatedUser);
-      reply.clearCookie('sessionId', { path: '/' });
-      req.session.userId = user.id;
       // const token = req.server.jwt.sign({ id: user.id, username: user.username });
       // Set the token as a cookie
       // reply.setCookie('token', token, {
@@ -88,8 +86,7 @@ const deleteUser = async (req, reply) => {
 
   if (user.username === sessionUser.username) {
     await user.destroy();
-    // reply.clearCookie('token', { path: '/' });
-    reply.clearCookie('sessionId', { path: '/' });
+    await req.session.destroy();
     reply.code(200).send(`User with id ${id} Deleted successfully `);
     return;
   }
