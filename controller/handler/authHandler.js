@@ -17,7 +17,7 @@ const loginUser = async (req, reply) => {
         //   username: row.username,
         // });
         console.log('Login Successful');
-        req.session.userId = row.id;
+        req.session.user = row.id;
         // Set the token as a cookie
         // reply.setCookie('token', token, {
         //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours

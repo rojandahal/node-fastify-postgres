@@ -10,6 +10,7 @@ const {
   updateUsers,
   deleteUser,
   getUser,
+  getOwnProfile,
 } = require('../../controller/handler/userHandler');
 
 module.exports = async function (fastify, opts) {
@@ -20,7 +21,7 @@ module.exports = async function (fastify, opts) {
   });
 
   fastify.get('/:id', {
-    preValidation: [fastify.authenticate],
+    preValidation: fastify.authenticate,
     schema: getUserOpts,
     handler: getUser,
   });
@@ -35,5 +36,10 @@ module.exports = async function (fastify, opts) {
     preValidation: fastify.authenticate,
     schema: deleteUserOpts,
     handler: deleteUser,
+  });
+
+  fastify.get('/google/me', {
+    preValidation: fastify.authenticate,
+    handler: getOwnProfile,
   });
 };

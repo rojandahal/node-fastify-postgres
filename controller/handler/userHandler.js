@@ -13,7 +13,7 @@ const setUser = async (req, reply) => {
 
   try {
     const row = await userModel.create(user);
-    req.session.userId = row.id;
+    req.session.user = row.id;
     // const token = req.server.jwt.sign(row);
     // Set the token as a cookie
     // reply.setCookie('token', token, {
@@ -43,7 +43,7 @@ const getUsers = async (req, reply) => {
 //Update user details (username)
 const updateUsers = async (req, reply) => {
   const { id } = req.params;
-  const sessionUser = req.session.userId;
+  const sessionUser = req.session.user;
   // const tokenDecoded = await req.server.getUserFromToken(req, reply);
 
   try {
@@ -80,7 +80,7 @@ const deleteUser = async (req, reply) => {
   }
 
   const sessionUser = await fastify.user.findOne({
-    where: { id: req.session.userId },
+    where: { id: req.session.user },
   });
   // const tokenDecoded = await req.server.getUserFromToken(req, reply);
 
@@ -105,4 +105,26 @@ const getUser = async (req, reply) => {
   }
   reply.code(200).send({ user });
 };
-module.exports = { setUser, getUsers, updateUsers, deleteUser, getUser };
+
+//Get Own Profile
+const getOwnProfile = async (req, reply) => {
+  const fastify = req.server;
+
+  await fastify
+    .getUser(req, reply)
+    .then((data) => {
+      reply.code(200).send({ data });
+    })
+    .catch((err) => {
+      console.error(err);
+      throw new Error(err);
+    });
+};
+module.exports = {
+  setUser,
+  getUsers,
+  updateUsers,
+  deleteUser,
+  getUser,
+  getOwnProfile,
+};
