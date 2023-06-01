@@ -83,7 +83,7 @@ SECRET_KEY=
 ```http
   POST /api/v1/logout
 ```
-| Parameter | Type     | Description                       |
+| Header | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `token`      | `string` | **Required**. The token of logged-in user |
 
@@ -91,7 +91,7 @@ SECRET_KEY=
 ```http
   GET /api/v1/users/
 ```
-| Parameter | Type     | Description                       |
+| Header | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `token`      | `string` | **Required**. The token of logged-in user |
 
@@ -102,7 +102,7 @@ SECRET_KEY=
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `string` | **Required**. The id of the user |
-| `token`      | `string` | **Required**. The token of logged-in user |
+| `token` (Header)| `string` | **Required**. The token of logged-in user |
 
 #### Update a User
 ```http
@@ -115,7 +115,7 @@ SECRET_KEY=
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `string` | **Required**. The id of the user |
-| `token`      | `string` | **Required**. The token of logged-in user |
+| `token` (Header)     | `string` | **Required**. The token of logged-in user |
 
 #### Delete a User
 ```http
@@ -124,4 +124,26 @@ SECRET_KEY=
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `id`      | `string` | **Required**. The id of the user |
+| `token` (Header)      | `string` | **Required**. The token of logged-in user |
+
+#### Sign in with Google
+```http
+  GET /api/v1/login/google
+```
+#### Create Task
+```http
+  POST /api/v1/tasks/
+```
+| Body | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `title`      | `string` | **Required**. The title of task |
+| `description`      | `string` | The description of task |
+| `status`      | `string` | The status of task |
+
+#### Get a Task
+```http
+  GET /api/v1/users/:id
+```
+| Header | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
 | `token`      | `string` | **Required**. The token of logged-in user |
