@@ -1,13 +1,24 @@
 'use strict';
-module.exports = async function (fastify, opts) {
-  fastify.get('/', fastify.authenticate, );
 
-  fastify.post('/', async function (req, reply) {
-		const { title, description, status } = req.body;
-		const userId = req.session.user.userId;
+const {
+  getTask,
+  setTasks,
+  updateTasks,
+} = require('../../controller/handler/tasksHandler');
+
+module.exports = async function (fastify, opts) {
+  fastify.get('/', {
+    preValidation: fastify.authenticate,
+    handler: getTask,
   });
 
-  fastify.put('/', async function (req, reply) {
-    return { root: true };
+  fastify.post('/', {
+    preValidation: fastify.authenticate,
+    handler: setTasks,
+  });
+
+  fastify.put('/', {
+    preValidation: fastify.authenticate,
+    handler: updateTasks,
   });
 };

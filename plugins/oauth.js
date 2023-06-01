@@ -26,41 +26,44 @@ const oauth = fastifyPlugin(async function (fastify, opts) {
   function isGoogleTokenExpired(token) {
     const currentTime = new Date(); // Convert to seconds
     const expirationTime = new Date(token.expires_at);
+    console.log(currentTime > expirationTime);
     return currentTime > expirationTime;
   }
 
   fastify.decorate('authenticate', async function (req, reply, done) {
     const token = req.session.token;
     const user = req.session.user;
-
+    console.log(user);
     if (user === undefined) {
       reply.code(401).send({ error: 'Unauthorized User' });
       return done();
     }
-    if (isGoogleTokenExpired(user)) {
-      req.server.googleOAuth2.getNewAccessTokenUsingRefreshToken(
-        req.session.token,
-        {
-          scope: ['profile', 'email'],
-        },
-        (err, accessToken) => {
-          if (err) {
-            reply.send(err);
-            return;
-          }
-          const refresh_token = req.session.token.refresh_token;
-          const newToken = {
-            ...accessToken.token,
-            refresh_token: refresh_token,
-          };
-          req.session.token = newToken;
-          reply.redirect(
-            `${process.env.baseURL}${process.env.API_VERSION}/users/google/me`,
-          );
-        },
-      );
-      done();
+    if (token !== undefined) {
+      if (isGoogleTokenExpired(token)) {
+        req.server.googleOAuth2.getNewAccessTokenUsingRefreshToken(
+          req.session.token,
+          {
+            scope: ['profile', 'email'],
+          },
+          (err, accessToken) => {
+            if (err) {
+              reply.send(err);
+              return;
+            }
+            const refresh_token = req.session.token.refresh_token;
+            const newToken = {
+              ...accessToken.token,
+              refresh_token: refresh_token,
+            };
+            req.session.token = newToken;
+            reply.redirect(
+              `${process.env.baseURL}${process.env.API_VERSION}/users`,
+            );
+          },
+        );
+      }
     }
+    done();
   });
 
   //Get User details and also save the user details in database

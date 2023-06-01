@@ -1,13 +1,30 @@
 'use strict';
 
 const setTasks = async (req, reply) => {
-  const { title, description, status } = req.body;
-  const userId = req.session.user.userId;
-  const task = await req.server.task.create({
-    title,
-    description,
-    status,
-    userId,
-  });
-  return task;
+  const taskDetails = req.body;
+  const userId = req.session.user;
+  const user = { ...taskDetails, user: userId };
+  const task = await req.server.task.create(user);
+  reply.code(201).send({ task });
+};
+
+const updateTasks = async (req, reply) => {
+  //Update Task
+};
+
+const getTask = async (req, reply) => {
+  const userId = req.session.user;
+  console.log(userId);
+  const task = await req.server.task.findAll({ where: { user: userId } });
+  if (task.length === 0) {
+    reply.code(404).send({ msg: 'No task found' });
+    return;
+  }
+  reply.code(200).send({ task });
+};
+
+module.exports = {
+  setTasks,
+  updateTasks,
+  getTask,
 };
