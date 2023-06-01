@@ -4,6 +4,15 @@ This project was bootstrapped with Fastify-CLI.
 Clone this repo using:  
 `git clone https://github.com/rojandahal/node-fastify-postgres.git`
 
+### Different feature implementation in Branch
+
+-`git checkout feature/local-auth` : Implements local authentication with postgres with username and password. 
+
+-`git checkout feature/session-auth` : Implements session in local authentication and stores the session in cookies.
+
+-`git checkout feature/oauth-google` : Extends `feature/session-auth` and implements "Sign in with google" and stores session
+ and also implements creation of task and fetching of task with user verification improved for both local and OAuth.
+
 
 ## Installation
 
