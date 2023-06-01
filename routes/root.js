@@ -8,6 +8,7 @@ module.exports = async function (fastify, opts) {
           reply.send(err);
           return;
         }
+				
         req.session.user = result;
         reply.redirect('http://localhost:3000/api/v1/users');
       },

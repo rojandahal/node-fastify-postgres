@@ -71,11 +71,18 @@ const oauth = fastifyPlugin(async function (fastify, opts) {
           },
           json: true,
         },
-        function (err, res, data) {
+        async function (err, res, data) {
           if (err) {
             reject(err);
             return;
           }
+          const [user, created] = await req.server.user.findOrCreate({
+            where: {
+              username: data.id,
+              email: data.email,
+              password: '',
+            },
+          });
           resolve(data);
         },
       );
