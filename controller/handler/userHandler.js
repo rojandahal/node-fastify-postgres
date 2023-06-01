@@ -111,9 +111,13 @@ const getOwnProfile = async (req, reply) => {
   const fastify = req.server;
 
   await fastify
-    .getUser(req, reply)
+    .getUser(req, req.session.token)
     .then((data) => {
-      reply.code(200).send({ data });
+      reply.send({
+        token: req.session.token,
+        id: req.session.user,
+        data: data,
+      });
     })
     .catch((err) => {
       console.error(err);
