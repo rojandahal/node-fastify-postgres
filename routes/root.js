@@ -1,7 +1,7 @@
 'use strict';
 module.exports = async function (fastify, opts) {
   fastify.get('/login/google/callback', function (req, reply) {
-    this.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(
+    fastify.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(
       req,
       (err, result) => {
         if (err) {

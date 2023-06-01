@@ -15,7 +15,17 @@ const oauth = fastifyPlugin(async function (fastify, opts) {
     },
     startRedirectPath: '/api/v1/login/google',
     callbackUri: 'http://localhost:3000/api/v1/login/google/callback',
+    callbackUriParams: {
+      // custom query param that will be passed to callbackUri
+      access_type: 'offline', // will tell Google to send a refreshToken too
+    },
   });
+
+  function isGoogleTokenExpired(token) {
+    const currentTime = new Date(); // Convert to seconds
+    const expirationTime = new Date(token.expires_at);
+    return currentTime > expirationTime;
+  }
 
   fastify.decorate('authenticate', async function (req, reply, done) {
     const user = req.session.user;
@@ -23,8 +33,28 @@ const oauth = fastifyPlugin(async function (fastify, opts) {
       reply.code(401).send({ error: 'Unauthorized User' });
       return done();
     }
-
-    done();
+    if (isGoogleTokenExpired(user)) {
+      req.server.googleOAuth2.getNewAccessTokenUsingRefreshToken(
+        req.session.user,
+        {
+          scope: ['profile', 'email'],
+        },
+        (err, accessToken) => {
+          if (err) {
+            reply.send(err);
+            return;
+          }
+          const refresh_token = req.session.user.refresh_token;
+          const newToken = {
+            ...accessToken.token,
+            refresh_token: refresh_token,
+          };
+          req.session.user = newToken;
+          reply.redirect('http://localhost:3000/api/v1/users/google/me');
+        },
+      );
+      done();
+    }
   });
 
   const getUser = async (req, reply) => {
