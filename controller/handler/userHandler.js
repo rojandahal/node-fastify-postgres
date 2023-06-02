@@ -111,7 +111,7 @@ const getOwnProfile = async (req, reply) => {
   const fastify = req.server;
 
   await fastify
-    .getUser(req, req.session.token)
+    .verifyUser(req, req.session.token)
     .then((data) => {
       reply.send({
         token: req.session.token,

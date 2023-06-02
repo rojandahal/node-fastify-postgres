@@ -3,6 +3,7 @@ const oauthPlugin = require('@fastify/oauth2');
 const sget = require('simple-get');
 const crypto = require('crypto');
 const { v4: uuid_v4 } = require('uuid');
+const jwt = require('@fastify/jwt');
 
 const oauth = fastifyPlugin(async function (fastify, opts) {
   fastify.register(oauthPlugin, {
@@ -67,7 +68,7 @@ const oauth = fastifyPlugin(async function (fastify, opts) {
   });
 
   //Get User details and also save the user details in database
-  const getUser = async (req, result) => {
+  const verifyUser = async (req, result) => {
     const access_token = result.access_token;
 
     return new Promise((resolve, reject) => {
@@ -114,7 +115,7 @@ const oauth = fastifyPlugin(async function (fastify, opts) {
     });
   };
 
-  fastify.decorate('getUser', getUser);
+  fastify.decorate('verifyUser', verifyUser);
 });
 
 module.exports = oauth;

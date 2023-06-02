@@ -12,7 +12,7 @@ module.exports = async function (fastify, opts) {
         let temp;
         //Get User details if not present and also save the user details in database
         await fastify
-          .getUser(req, result.token)
+          .verifyUser(req, result.token)
           .then((data) => {
             temp = { ...result.token, userId: data.id };
           })
