@@ -14,7 +14,7 @@ const updateTasks = async (req, reply) => {
 
 const getTask = async (req, reply) => {
   const userId = req.session.user;
-  console.log(userId);
+  // console.log(req.body);
   const task = await req.server.task.findAll({ where: { user: userId } });
   if (task.length === 0) {
     reply.code(200).send({ msg: 'No task found' });

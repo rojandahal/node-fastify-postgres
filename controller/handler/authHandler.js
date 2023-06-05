@@ -22,7 +22,9 @@ const loginUser = async (req, reply) => {
         // reply.setCookie('token', token, {
         //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
         // });
-        const token = await reply.generateCsrf();
+        const token = await reply.generateCsrf({
+          userInfo: req.session.user,
+        });
         req.session.csrfToken = token;
         reply.code(200).send({
           'Login Successful': req.session.user,

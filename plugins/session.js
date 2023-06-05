@@ -27,11 +27,9 @@ const sessionConnect = async (fastify, opts) => {
   });
 
   fastify.register(require('@fastify/csrf-protection'), {
+    getUserInfo: (req) => req.session.user,
+    getToken: (req) => req.session.csrfToken,
     sessionPlugin: '@fastify/session',
-    getToken: (req) => {
-      console.log(req.session.csrfToken);
-      return req.session.csrfToken;
-    },
   });
 };
 // const fastifyPlugin = require('fastify-plugin');
