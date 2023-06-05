@@ -25,10 +25,13 @@ module.exports = async function (fastify, opts) {
   fastify.register(require('@fastify/cookie'), {
     secret: process.env.SECRET_KEY, // for cookies signature
   });
-  
+
   //Setup CORS
-  await fastify.register(cors, {
-    origin: true,
+  fastify.register(cors, {
+    origin: ['http://127.0.0.1:5173', 'http://localhost:5173'],
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
