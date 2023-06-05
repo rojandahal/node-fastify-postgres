@@ -25,6 +25,14 @@ const sessionConnect = async (fastify, opts) => {
       createTableIfMissing: false, // Disable table creation if missing
     }),
   });
+
+  fastify.register(require('@fastify/csrf-protection'), {
+    sessionPlugin: '@fastify/session',
+    getToken: (req) => {
+      console.log(req.session.csrfToken);
+      return req.session.csrfToken;
+    },
+  });
 };
 // const fastifyPlugin = require('fastify-plugin');
 // const session = require('fastify-session');

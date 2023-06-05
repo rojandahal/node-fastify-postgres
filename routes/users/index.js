@@ -14,6 +14,7 @@ const {
 
 module.exports = async function (fastify, opts) {
   fastify.get('/', {
+    onRequest: fastify.csrfProtection,
     preValidation: fastify.authenticate,
     schema: getUsersOpts,
     handler: getUsers,
