@@ -58,7 +58,7 @@ const updateUsers = async (req, reply) => {
       //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
       // });
 
-      reply.code(200).send({ 'User Updated': user });
+      reply.code(200).send('User Updated');
       return;
     } else {
       reply.code(401).send({ Unauthorized: 'Unauthorized' });

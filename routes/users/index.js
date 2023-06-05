@@ -3,7 +3,6 @@ const {
   getUsersOpts,
   updateUserOpts,
   deleteUserOpts,
-  getUserOpts,
 } = require('../../controller/schema/userSchema');
 const {
   getUsers,
@@ -22,13 +21,15 @@ module.exports = async function (fastify, opts) {
 
   fastify.get('/:id', {
     preValidation: fastify.authenticate,
-    schema: getUserOpts,
     handler: getUser,
   });
 
   fastify.put('/:id', {
     preValidation: fastify.authenticate,
     schema: updateUserOpts,
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
+      return (data) => schema.validate(data);
+    },
     handler: updateUsers,
   });
 
