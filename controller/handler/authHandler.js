@@ -29,10 +29,10 @@ const loginUser = async (req, reply) => {
           SessionId: req.session,
         });
       } else {
-        reply.status(401).send('Wrong Password');
+        reply.code(401).send('Invalid username of password');
       }
     } else {
-      reply.status(404).send('User Not found');
+      reply.code(404).send('User Not found');
     }
   } catch (error) {
     console.error(error);

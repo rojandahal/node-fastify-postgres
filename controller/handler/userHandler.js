@@ -75,7 +75,7 @@ const deleteUser = async (req, reply) => {
   const fastify = req.server;
   const user = await fastify.user.findOne({ where: { id: id } });
   if (user === null) {
-    reply.status(404).send(`User with id ${id} not found`);
+    reply.code(200).send(`User with id ${id} not found`);
     return;
   }
 
@@ -100,7 +100,7 @@ const getUser = async (req, reply) => {
   const user = await fastify.user.findOne({ where: { id: id } });
 
   if (user === null) {
-    reply.status(404).send(`User with id ${id} not found`);
+    reply.code(200).send(`User with id ${id} not found`);
     return;
   }
   reply.code(200).send({ user });

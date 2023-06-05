@@ -17,7 +17,7 @@ const getTask = async (req, reply) => {
   console.log(userId);
   const task = await req.server.task.findAll({ where: { user: userId } });
   if (task.length === 0) {
-    reply.code(404).send({ msg: 'No task found' });
+    reply.code(200).send({ msg: 'No task found' });
     return;
   }
   reply.code(200).send({ task });

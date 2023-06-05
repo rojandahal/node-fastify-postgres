@@ -22,14 +22,15 @@ module.exports = async function (fastify, opts) {
           });
         req.session.user = temp.userId;
         req.session.token = result;
-        reply.redirect(
-          `${process.env.baseURL}${process.env.API_VERSION}/users`,
-        );
+        reply.redirect('http://localhost:5173');
+        // reply.redirect(
+        //   `${process.env.baseURL}${process.env.API_VERSION}/users`,
+        // );
       },
     );
   });
 
   fastify.get('/auth/google', function (req, reply) {
-    reply.redirect(fastify.googleOAuth2.generateAuthUrl());
+    reply.redirect('/api/v1/login/google');
   });
 };
