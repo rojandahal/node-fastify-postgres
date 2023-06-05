@@ -27,7 +27,6 @@ const loginUser = async (req, reply) => {
         reply.code(200).send({
           'Login Successful': req.session.user,
           SessionId: req.session,
-          token,
         });
       } else {
         reply.status(401).send('Wrong Password');

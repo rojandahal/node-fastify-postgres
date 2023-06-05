@@ -3,7 +3,6 @@ const oauthPlugin = require('@fastify/oauth2');
 const sget = require('simple-get');
 const crypto = require('crypto');
 const { v4: uuid_v4 } = require('uuid');
-const jwt = require('@fastify/jwt');
 
 const oauth = fastifyPlugin(async function (fastify, opts) {
   fastify.register(oauthPlugin, {

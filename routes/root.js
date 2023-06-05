@@ -28,4 +28,8 @@ module.exports = async function (fastify, opts) {
       },
     );
   });
+
+  fastify.get('/auth/google', function (req, reply) {
+    reply.redirect(fastify.googleOAuth2.generateAuthUrl());
+  });
 };
