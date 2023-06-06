@@ -3,37 +3,45 @@ const {
   getUsersOpts,
   updateUserOpts,
   deleteUserOpts,
-	getUserOpts,
 } = require('../../controller/schema/userSchema');
 const {
   getUsers,
   updateUsers,
   deleteUser,
-	getUser,
+  getUser,
+  getOwnProfile,
 } = require('../../controller/handler/userHandler');
 
 module.exports = async function (fastify, opts) {
   fastify.get('/', {
-    onRequest: fastify.authenticate,
+    onRequest: fastify.csrfProtection,
+    preValidation: fastify.authenticate,
     schema: getUsersOpts,
     handler: getUsers,
   });
 
-	fastify.get('/:id', {
-		onRequest: fastify.authenticate,
-		schema: getUserOpts,
-		handler: getUser,
-	});
+  fastify.get('/:id', {
+    preValidation: fastify.authenticate,
+    handler: getUser,
+  });
 
   fastify.put('/:id', {
-    onRequest: fastify.authenticate,
+    preValidation: fastify.authenticate,
     schema: updateUserOpts,
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
+      return (data) => schema.validate(data);
+    },
     handler: updateUsers,
   });
 
   fastify.delete('/:id', {
-    onRequest: fastify.authenticate,
+    preValidation: fastify.authenticate,
     schema: deleteUserOpts,
     handler: deleteUser,
+  });
+
+  fastify.get('/google/me', {
+    preValidation: fastify.authenticate,
+    handler: getOwnProfile,
   });
 };

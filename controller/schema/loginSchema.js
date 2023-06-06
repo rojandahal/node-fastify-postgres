@@ -1,21 +1,12 @@
 const User = require('../../model/user');
+const Joi = require('joi');
 
 const loginOpts = {
-  schema: {
-    body: {
-      type: 'object',
-      //This will make the name field required in the body
-      //It gives 400 bad request when name is not passed
-      required: ['username', 'password'],
-      properties: {
-        username: { type: 'string' },
-        password: { type: 'string' },
-      },
-    },
-    response: {
-      200: User,
-    },
-  },
+  body: Joi.object()
+    .keys({
+      username: Joi.string().alphanum().min(3).max(30).required(),
+      password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+    })
+    .required(),
 };
-
 module.exports = { loginOpts };

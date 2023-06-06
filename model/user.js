@@ -3,9 +3,9 @@ const { DataTypes } = require('sequelize');
 const UserModel = (sequelize) => {
   const User = sequelize.define('users', {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      autoIncrement: true,
     },
     username: {
       // Define the data type
@@ -21,6 +21,7 @@ const UserModel = (sequelize) => {
     },
     email: {
       type: DataTypes.STRING,
+			unique: true,
       // Enforce an email format
       validate: {
         isEmail: {

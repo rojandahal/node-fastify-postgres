@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 
+//Create a new User
 const setUser = async (req, reply) => {
   const fastify = req.server;
   const userModel = fastify.user;
@@ -12,23 +13,22 @@ const setUser = async (req, reply) => {
 
   try {
     const row = await userModel.create(user);
-    const token = req.server.jwt.sign(row);
+    req.session.user = row.id;
+    // const token = req.server.jwt.sign(row);
     // Set the token as a cookie
-    reply.setCookie('token', token, {
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
-    });
-    reply.code(200).send({ row, token });
+    // reply.setCookie('token', token, {
+    //   path: '/api/v1',
+    //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
+    // });
+    reply.code(200).send(row);
   } catch (error) {
     console.error(error);
     throw new Error(error.errors[0].message);
   }
 };
 
+//Get All users
 const getUsers = async (req, reply) => {
-  const token = req.cookies.token;
-  if (!token) {
-    reply.code(401).send({ error: 'Unauthorized' });
-  }
   const fastify = req.server;
   const userModel = fastify.user;
   try {
@@ -40,54 +40,95 @@ const getUsers = async (req, reply) => {
   }
 };
 
+//Update user details (username)
 const updateUsers = async (req, reply) => {
   const { id } = req.params;
-  const fastify = req.server;
-  const user = await fastify.user.findOne({ where: { id: id } });
-  user === null ? reply.status(404).send(`User with id ${id} not found`) : null;
+  const sessionUser = req.session.user;
+  // const tokenDecoded = await req.server.getUserFromToken(req, reply);
 
-  const tokenDecoded = await req.server.getUserFromToken(req, reply);
+  try {
+    if (id === sessionUser) {
+      const user = await req.server.user.findOne({ where: { id: id } });
+      const updatedUser = { username: req.body.username };
+      await user.update(updatedUser);
+      // const token = req.server.jwt.sign({ id: user.id, username: user.username });
+      // Set the token as a cookie
+      // reply.setCookie('token', token, {
+      //   path: '/api/v1',
+      //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
+      // });
 
-  if (user.username === tokenDecoded.dataValues.username) {
-    const updatedUser = { username: req.body.username };
-    await user.update(updatedUser);
-    const token = req.server.jwt.sign(user);
-    // Set the token as a cookie
-    reply.setCookie('token', token, {
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
-    });
-
-    reply.code(200).send({ 'User Updated': user });
-  } else {
-    reply.code(401).send({ Unauthorized: 'Unauthorized' });
+      reply.code(200).send('User Updated');
+      return;
+    } else {
+      reply.code(401).send({ Unauthorized: 'Unauthorized' });
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error(error);
   }
 };
 
+//Delete user and clear all cookies
 const deleteUser = async (req, reply) => {
   const { id } = req.params;
   const fastify = req.server;
   const user = await fastify.user.findOne({ where: { id: id } });
-  user === null ? reply.status(404).send(`User with id ${id} not found`) : null;
-  const tokenDecoded = await req.server.getUserFromToken(req, reply);
+  if (user === null) {
+    reply.code(200).send(`User with id ${id} not found`);
+    return;
+  }
 
-  if (user.username === tokenDecoded.dataValues.username) {
+  const sessionUser = await fastify.user.findOne({
+    where: { id: req.session.user },
+  });
+  // const tokenDecoded = await req.server.getUserFromToken(req, reply);
+
+  if (user.username === sessionUser.username) {
     await user.destroy();
-    reply.clearCookie('token', { path: '/' });
+    await req.session.destroy();
     reply.code(200).send(`User with id ${id} Deleted successfully `);
+    return;
   }
   reply.code(401).send({ Unauthorized: 'Unauthorized' });
 };
 
+//Get single user details
 const getUser = async (req, reply) => {
   const { id } = req.params;
   const fastify = req.server;
   const user = await fastify.user.findOne({ where: { id: id } });
-  user === null ? reply.status(404).send(`User with id ${id} not found`) : null;
-  const tokenDecoded = await req.server.getUserFromToken(req, reply);
 
-  if (user.username === tokenDecoded.dataValues.username) {
-    reply.code(200).send({ user });
+  if (user === null) {
+    reply.code(200).send(`User with id ${id} not found`);
+    return;
   }
-  reply.code(401).send({ Unauthorized: 'Unauthorized' });
+  reply.code(200).send({ user });
 };
-module.exports = { setUser, getUsers, updateUsers, deleteUser, getUser };
+
+//Get Own Profile
+const getOwnProfile = async (req, reply) => {
+  const fastify = req.server;
+
+  await fastify
+    .verifyUser(req, req.session.token)
+    .then((data) => {
+      reply.send({
+        token: req.session.token,
+        id: req.session.user,
+        data: data,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      throw new Error(err);
+    });
+};
+module.exports = {
+  setUser,
+  getUsers,
+  updateUsers,
+  deleteUser,
+  getUser,
+  getOwnProfile,
+};
