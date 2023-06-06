@@ -21,6 +21,7 @@ const UserModel = (sequelize) => {
     },
     email: {
       type: DataTypes.STRING,
+			unique: true,
       // Enforce an email format
       validate: {
         isEmail: {

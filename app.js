@@ -3,7 +3,6 @@
 const path = require('path');
 const AutoLoad = require('@fastify/autoload');
 const cors = require('@fastify/cors');
-
 // Define the default options
 const defaultOptions = {
   fastify: {
@@ -27,11 +26,18 @@ module.exports = async function (fastify, opts) {
     secret: process.env.SECRET_KEY, // for cookies signature
   });
 
-  
-
   //Setup CORS
-  await fastify.register(cors, {
-    origin: true,
+  fastify.register(cors, {
+    origin: [
+      'http://127.0.0.1:5173',
+      'http://localhost:5173',
+      'http://127.0.0.1:3000',
+      'http://localhost:3000',
+      'https://accounts.google.com',
+    ],
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 

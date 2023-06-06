@@ -13,7 +13,7 @@ const setUser = async (req, reply) => {
 
   try {
     const row = await userModel.create(user);
-    req.session.userId = row.id;
+    req.session.user = row.id;
     // const token = req.server.jwt.sign(row);
     // Set the token as a cookie
     // reply.setCookie('token', token, {
@@ -43,7 +43,7 @@ const getUsers = async (req, reply) => {
 //Update user details (username)
 const updateUsers = async (req, reply) => {
   const { id } = req.params;
-  const sessionUser = req.session.userId;
+  const sessionUser = req.session.user;
   // const tokenDecoded = await req.server.getUserFromToken(req, reply);
 
   try {
@@ -58,7 +58,7 @@ const updateUsers = async (req, reply) => {
       //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
       // });
 
-      reply.code(200).send({ 'User Updated': user });
+      reply.code(200).send('User Updated');
       return;
     } else {
       reply.code(401).send({ Unauthorized: 'Unauthorized' });
@@ -75,12 +75,12 @@ const deleteUser = async (req, reply) => {
   const fastify = req.server;
   const user = await fastify.user.findOne({ where: { id: id } });
   if (user === null) {
-    reply.status(404).send(`User with id ${id} not found`);
+    reply.code(200).send(`User with id ${id} not found`);
     return;
   }
 
   const sessionUser = await fastify.user.findOne({
-    where: { id: req.session.userId },
+    where: { id: req.session.user },
   });
   // const tokenDecoded = await req.server.getUserFromToken(req, reply);
 
@@ -100,9 +100,35 @@ const getUser = async (req, reply) => {
   const user = await fastify.user.findOne({ where: { id: id } });
 
   if (user === null) {
-    reply.status(404).send(`User with id ${id} not found`);
+    reply.code(200).send(`User with id ${id} not found`);
     return;
   }
   reply.code(200).send({ user });
 };
-module.exports = { setUser, getUsers, updateUsers, deleteUser, getUser };
+
+//Get Own Profile
+const getOwnProfile = async (req, reply) => {
+  const fastify = req.server;
+
+  await fastify
+    .verifyUser(req, req.session.token)
+    .then((data) => {
+      reply.send({
+        token: req.session.token,
+        id: req.session.user,
+        data: data,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      throw new Error(err);
+    });
+};
+module.exports = {
+  setUser,
+  getUsers,
+  updateUsers,
+  deleteUser,
+  getUser,
+  getOwnProfile,
+};

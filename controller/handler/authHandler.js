@@ -17,20 +17,24 @@ const loginUser = async (req, reply) => {
         //   username: row.username,
         // });
         console.log('Login Successful');
-        req.session.userId = row.id;
+        req.session.user = row.id;
         // Set the token as a cookie
         // reply.setCookie('token', token, {
         //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Expires in 24 hours
         // });
+        const token = await reply.generateCsrf({
+          userInfo: req.session.user,
+        });
+        req.session.csrfToken = token;
         reply.code(200).send({
           'Login Successful': req.session.user,
           SessionId: req.session,
         });
       } else {
-        reply.status(401).send('Wrong Password');
+        reply.code(401).send('Invalid username of password');
       }
     } else {
-      reply.status(404).send('User Not found');
+      reply.code(404).send('User Not found');
     }
   } catch (error) {
     console.error(error);

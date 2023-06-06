@@ -12,18 +12,24 @@ const sessionConnect = async (fastify, opts) => {
   fastify.register(session, {
     secret: process.env.SESSION_SECRET,
     cookie: {
+      path: '/',
       secure: false, // Set to true if using HTTPS
-      // maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
-      maxAge: 60000,
-      expires: new Date(Date.now() + 60000),
+      maxAge: 24 * 60 * 60 * 1000, // Session expiration time (in milliseconds)
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      httpOnly: true,
     },
     saveUninitialized: false,
-    sameSite: true,
     store: new pgSession({
       pool,
       tableName: 'sessions', // Name of the session table in the database
       createTableIfMissing: false, // Disable table creation if missing
     }),
+  });
+
+  fastify.register(require('@fastify/csrf-protection'), {
+    getUserInfo: (req) => req.session.user,
+    getToken: (req) => req.session.csrfToken,
+    sessionPlugin: '@fastify/session',
   });
 };
 // const fastifyPlugin = require('fastify-plugin');
