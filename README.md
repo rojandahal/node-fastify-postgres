@@ -51,6 +51,11 @@ To run this project, you will need to add the following environment variables to
 ```bash
 API_VERSION=
 SECRET_KEY=
+SESSION_SECRET=
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=
+GOOGLE_OAUTH_REDIRECT=
+baseURL=
 ```
 
 
